@@ -1,0 +1,380 @@
+% Setting up the document class and essential packages
+\documentclass[a4paper,10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{geometry}
+\geometry{margin=0.7in}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue,
+    pdfborder={0 0 0}
+}
+\usepackage{titling}
+\usepackage{tocloft}
+\usepackage{enumitem}
+\usepackage{parskip}
+\setlength{\parskip}{0.5em}
+\usepackage{xcolor}
+\usepackage{verbatim}
+\usepackage{fancyhdr}
+
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[C]{\thetitle}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% Defining custom commands for consistent formatting
+\newcommand{\sectiontitle}[1]{%
+    \begin{center}
+        \section*{#1}
+    \end{center}
+    \vspace{-0.5em}
+}
+\newcommand{\subsectiontitle}[1]{\subsection*{#1}\vspace{-0.3em}}
+\newcommand{\cmd}[1]{\texttt{#1}}
+\newcommand{\mycomment}[1]{\textit{\# #1}}
+
+% Setting the title
+\title{Git Cheat Sheet}
+\author{Karim Yasser}
+\date{}
+
+\begin{document}
+
+% Title page
+\begin{center}
+    \vspace*{10cm} % Add vertical space at the top
+    {\Huge \textbf{Git Cheat Sheet}} \\[1cm] % Large title with bold
+    {\Large The essential Git commands every developer must know} \\[1cm] % Large subtitle
+    \vspace{0.5cm}
+    \textit{by Karim Yasser} % Author in italic
+    \vspace{2cm} % Add space at the bottom
+\end{center}
+\newpage
+
+% Creating Snapshots
+\sectiontitle{Creating Snapshots}
+\subsectiontitle{Configuring Git}
+\begin{verbatim}
+git config --global user.name "Your Name"   # Sets your name for commits
+git config --global user.email "your.email@example.com"  # Sets your email for commits
+git config --global core.editor "nano"      # Sets the default editor for Git messages
+git config --global --list                  # Lists all Git configuration settings
+\end{verbatim}
+
+\subsectiontitle{Initializing a repository}
+\begin{verbatim}
+git init
+\end{verbatim}
+
+\subsectiontitle{Staging files}
+\begin{verbatim}
+git add file1.js                # Stages a single file
+git add file1.js file2.js       # Stages multiple files
+git add *.js                    # Stages with a pattern
+git add .                       # Stages the current directory and all its content
+git add -u                      # Stages modified and deleted files, not new files
+\end{verbatim}
+
+\subsectiontitle{Ignoring Files}
+\begin{verbatim}
+# Create or edit a .gitignore file to exclude files from tracking
+echo "node_modules/" >> .gitignore  # Ignores the node_modules directory
+echo "*.log" >> .gitignore          # Ignores all .log files
+git status                          # Verify ignored files are no longer tracked
+\end{verbatim}
+
+\subsectiontitle{Viewing the status}
+\begin{verbatim}
+git status                      # Full status
+git status -s                   # Short status
+\end{verbatim}
+
+\subsectiontitle{Committing the staged files}
+\begin{verbatim}
+git commit -m "Message"         # Commits with a one-line message
+git commit                      # Opens the default editor to type a long message
+git commit --no-edit            # Commits without changing the message during amend
+\end{verbatim}
+
+\subsectiontitle{Skipping the staging area}
+\begin{verbatim}
+git commit -am "Message"
+\end{verbatim}
+
+\subsectiontitle{Removing files}
+\begin{verbatim}
+git rm file1.js                 # Removes from working directory and staging area
+git rm --cached file1.js        # Removes from staging area only
+\end{verbatim}
+
+\subsectiontitle{Renaming or moving files}
+\begin{verbatim}
+git mv file1.js file1.txt
+\end{verbatim}
+\newpage
+
+% Browsing History
+\sectiontitle{Browsing History}
+\subsectiontitle{Viewing the staged/unstaged changes}
+\begin{verbatim}
+git diff                        # Shows unstaged changes
+git diff --staged               # Shows staged changes
+git diff --cached               # Same as the above
+git diff --name-only            # Lists only the names of changed files
+\end{verbatim}
+
+\subsectiontitle{Viewing the history}
+\begin{verbatim}
+git log                         # Full history
+git log --oneline               # Summary
+git log --reverse               # Lists the commits from the oldest to the newest
+git log --graph                 # Visualizes branch history with a graph
+\end{verbatim}
+
+\subsectiontitle{Viewing a commit}
+\begin{verbatim}
+git show 921a2ff                # Shows the given commit
+git show HEAD                   # Shows the last commit
+git show HEAD~2                 # Two steps before the last commit
+git show HEAD:file.js           # Shows the version of file.js stored in the last commit
+\end{verbatim}
+
+\subsectiontitle{Unstaging files (undoing git add)}
+\begin{verbatim}
+git restore --staged file.js    # Copies the last version of file.js from repo to index
+\end{verbatim}
+
+\subsectiontitle{Discarding local changes}
+\begin{verbatim}
+git restore file.js             # Copies file.js from index to working directory
+git restore file1.js file2.js   # Restores multiple files in working directory
+git restore .                   # Discards all local changes (except untracked files)
+git clean -fd                   # Removes all untracked files
+\end{verbatim}
+
+\subsectiontitle{Restoring an earlier version of a file}
+\begin{verbatim}
+git restore --source=HEAD~2 file.js
+\end{verbatim}
+
+\subsectiontitle{Filtering the history}
+\begin{verbatim}
+git log --stat                  # Shows the list of modified files
+git log --patch                 # Shows the actual changes (patches)
+git log -3                      # Shows the last 3 entries
+git log --author="Mosh"         # Commits by author "Mosh"
+git log --before="2020-08-17"   # Commits before a date
+git log --after="one week ago"  # Commits after a date
+git log --grep="GUI"            # Commits with "GUI" in their message
+git log -S"GUI"                 # Commits with "GUI" in their patches
+git log hash1..hash2            # Range of commits
+git log file.txt                # Commits that touched file.txt
+\end{verbatim}
+
+\subsectiontitle{Formatting the log output}
+\begin{verbatim}
+git log --pretty=format:"%an committed %H"
+\end{verbatim}
+
+\subsectiontitle{Creating an alias}
+\begin{verbatim}
+git config --global alias.lg "log --oneline"
+\end{verbatim}
+
+\subsectiontitle{Comparing commits}
+\begin{verbatim}
+git diff HEAD~2 HEAD            # Shows the changes between two commits
+git diff HEAD~2 HEAD file.txt   # Changes to file.txt only
+\end{verbatim}
+
+\subsectiontitle{Checking out a commit}
+\begin{verbatim}
+git checkout dad47ed            # Checks out the given commit
+git checkout master             # Checks out the master branch
+\end{verbatim}
+
+\subsectiontitle{Finding a bad commit}
+\begin{verbatim}
+git bisect start
+git bisect bad                  # Marks the current commit as a bad commit
+git bisect good ca49180         # Marks the given commit as a good commit
+git bisect reset                # Terminates the bisect session
+\end{verbatim}
+
+\subsectiontitle{Finding contributors}
+\begin{verbatim}
+git shortlog
+\end{verbatim}
+
+\subsectiontitle{Viewing the history of a file}
+\begin{verbatim}
+git log file.txt                # Shows the commits that touched file.txt
+git log --stat file.txt         # Shows statistics (the number of changes) for file.txt
+git log --patch file.txt        # Shows the patches (changes) applied to file.txt
+\end{verbatim}
+
+\subsectiontitle{Finding the author of lines}
+\begin{verbatim}
+git blame file.txt              # Shows the author of each line in file.txt
+\end{verbatim}
+
+\subsectiontitle{Tagging}
+\begin{verbatim}
+git tag v1.0                    # Tags the last commit as v1.0
+git tag v1.0 5e7a828           # Tags an earlier commit
+git tag                         # Lists all the tags
+git tag -d v1.0                 # Deletes the given tag
+\end{verbatim}
+\newpage
+
+% Branching & Merging
+\sectiontitle{Branching \& Merging}
+\subsectiontitle{Managing branches}
+\begin{verbatim}
+git branch bugfix               # Creates a new branch called bugfix
+git checkout bugfix             # Switches to the bugfix branch
+git switch bugfix               # Same as the above
+git switch -C bugfix            # Creates and switches
+git branch -d bugfix            # Deletes the bugfix branch
+git branch -m bugfix newname    # Renames the branch to newname
+\end{verbatim}
+
+\subsectiontitle{Comparing branches}
+\begin{verbatim}
+git log master..bugfix          # Lists the commits in the bugfix branch not in master
+git diff master..bugfix          # Shows the summary of changes
+\end{verbatim}
+
+\subsectiontitle{Stashing}
+\begin{verbatim}
+git stash push -m "New tax rules"  # Creates a new stash
+git stash list                  # Lists all the stashes
+git stash show stash@{1}        # Shows the given stash
+git stash show 1                # Shortcut for stash@{1}
+git stash apply 1               # Applies the given stash to the working dir
+git stash pop                   # Applies the latest stash and removes it from the list
+git stash drop 1                # Deletes the given stash
+git stash clear                 # Deletes all the stashes
+\end{verbatim}
+
+\subsectiontitle{Merging}
+\begin{verbatim}
+git merge bugfix                # Merges the bugfix branch into the current branch
+git merge --no-ff bugfix        # Creates a merge commit even if FF is possible
+git merge --squash bugfix       # Performs a squash merge
+git merge --abort               # Aborts the merge
+\end{verbatim}
+
+\subsectiontitle{Viewing the merged branches}
+\begin{verbatim}
+git branch --merged             # Shows the merged branches
+git branch --no-merged          # Shows the unmerged branches
+\end{verbatim}
+
+\subsectiontitle{Rebasing}
+\begin{verbatim}
+git rebase master               # Changes the base of the current branch
+git rebase --continue           # Continues a rebase after resolving conflicts
+\end{verbatim}
+
+\subsectiontitle{Cherry picking}
+\begin{verbatim}
+git cherry-pick dad47ed         # Applies the given commit on the current branch
+\end{verbatim}
+
+\subsectiontitle{Managing Worktrees}
+\begin{verbatim}
+git worktree add <path> <branch>            # Creates a new worktree at <path> for <branch>
+git worktree add ../myapp-feature-login feature/login
+git worktree list                           # Lists all linked worktrees
+git worktree remove <path>                  # Deletes a worktree
+git worktree remove ../myapp-feature-login
+git worktree prune                          # Cleans up stale worktree metadata
+\end{verbatim}
+
+\newpage
+
+% Collaboration
+\sectiontitle{Collaboration}
+\subsectiontitle{Cloning a repository}
+\begin{verbatim}
+git clone url
+\end{verbatim}
+
+\subsectiontitle{Syncing with remotes}
+\begin{verbatim}
+git fetch origin master         # Fetches master from origin
+git fetch origin                # Fetches all objects from origin
+git fetch                       # Shortcut for "git fetch origin"
+git fetch --prune               # Removes stale remote-tracking branches
+git pull                        # Fetch + merge
+git pull --rebase               # Fetch + rebase instead of merge
+git push origin master          # Pushes master to origin
+git push                        # Shortcut for "git push origin master"
+\end{verbatim}
+
+\subsectiontitle{Sharing tags}
+\begin{verbatim}
+git push origin v1.0            # Pushes tag v1.0 to origin
+git push origin --delete v1.0   # Deletes tag v1.0 from origin
+\end{verbatim}
+
+\subsectiontitle{Sharing branches}
+\begin{verbatim}
+git branch -r                   # Shows remote tracking branches
+git branch -vv                  # Shows local & remote tracking branches
+git push -u origin bugfix       # Pushes bugfix to origin
+git push -d origin bugfix       # Removes bugfix from origin
+\end{verbatim}
+
+\subsectiontitle{Managing remotes}
+\begin{verbatim}
+git remote                      # Shows remote repos
+git remote -v                   # Shows remote repos with their URLs
+git remote add upstream url     # Adds a new remote called upstream
+git remote rename upstream newname  # Renames the remote 'upstream' to 'newname'
+git remote rm upstream          # Removes upstream
+\end{verbatim}
+\newpage
+
+% Rewriting History
+\sectiontitle{Rewriting History}
+\subsectiontitle{Undoing commits}
+\begin{verbatim}
+git reset --soft HEAD^          # Removes the last commit, keeps changes staged
+git reset --mixed HEAD^         # Unstages the changes as well
+git reset --hard HEAD^          # Discards local changes
+git reset --keep HEAD^          # Resets to HEAD^, keeps untracked files
+\end{verbatim}
+
+\subsectiontitle{Reverting commits}
+\begin{verbatim}
+git revert 72856ea              # Reverts the given commit
+git revert HEAD~3               # Reverts the last three commits
+git revert --no-commit HEAD~3   # Reverts without committing
+\end{verbatim}
+
+\subsectiontitle{Recovering lost commits}
+\begin{verbatim}
+git reflog                      # Shows the history of HEAD
+git reflog show bugfix          # Shows the history of bugfix pointer
+\end{verbatim}
+
+\subsectiontitle{Amending the last commit}
+\begin{verbatim}
+git commit --amend
+git commit --fixup 72856ea      # Marks a commit for later rebase
+\end{verbatim}
+
+\subsectiontitle{Interactive rebasing}
+\begin{verbatim}
+git rebase -i HEAD~5
+\end{verbatim}
+
+\end{document}
